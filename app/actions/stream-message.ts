@@ -1,22 +1,26 @@
-import { StreamingTextResponse, LangChainStream } from 'ai';
-import { ChatOpenAI } from '@langchain/openai';
-import { AIMessage, HumanMessage } from '@langchain/core/messages';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+import OpenAI from 'openai';
 
-export interface ChatMessage {
-  id: number;
-  role: 'user' | 'assistant';
-  content: string;
-}
+export async function streamMessage(messages: string) {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not set in the environment');
+  }
 
-export async function streamMessage(chatHistory: string) {
-  const { stream, handlers } = LangChainStream();
-  const llm = new ChatOpenAI({ streaming: true });
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
-  const messages = JSON.parse(chatHistory).map((msg: ChatMessage) =>
-    msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content)
-  );
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: JSON.parse(messages),
+      stream: true,
+    });
 
-  llm.call(messages, {}, [handlers]);
-
-  return new StreamingTextResponse(stream);
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
+  } catch (error) {
+    console.error('Error in streamMessage:', error);
+    throw error;
+  }
 }
