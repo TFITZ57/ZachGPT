@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stoned AI Chat
+
+This is a Next.js project that implements an AI chatbot with a "stoned" personality. It uses the OpenAI API to generate responses and features a unique interface designed for casual, laid-back conversations.
+
+## Features
+
+- Real-time AI responses with a stoned personality
+- Chat history management
+- Adjustable "highness" level
+- Responsive design for desktop and mobile
+- Dark mode for late-night chats
+
+Built with Next.js, React, and Tailwind CSS.
 
 ## Getting Started
 
