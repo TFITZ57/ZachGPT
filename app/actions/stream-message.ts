@@ -1,24 +1,21 @@
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import OpenAI from 'openai';
 
-export async function streamMessage(messages: string) {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not set in the environment');
-  }
-
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
+export async function streamMessage(messages: string, speed: string) {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: JSON.parse(messages),
-      stream: true,
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages: JSON.parse(messages), speed }),
     });
 
-    const stream = OpenAIStream(response);
-    return new StreamingTextResponse(stream);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response;
   } catch (error) {
     console.error('Error in streamMessage:', error);
     throw error;

@@ -28,14 +28,19 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [streamingMessage, setStreamingMessage] = useState('');
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
-  const [highness, setHighness] = useState('Slightly Stoned');
+  const [speed, setSpeed] = useState('Slightly Stoned');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const savedChats = localStorage.getItem('chats');
     if (savedChats) {
-      setChats(JSON.parse(savedChats));
+      const parsedChats = JSON.parse(savedChats);
+      const renamedChats = parsedChats.map((chat: Chat, index: number) => ({
+        ...chat,
+        name: `Huddle ${index + 1}`
+      }));
+      setChats(renamedChats);
     }
   }, []);
 
@@ -56,7 +61,7 @@ export default function Home() {
   const createNewChat = () => {
     const newChat: Chat = {
       id: uuidv4(),
-      name: `New Chat ${chats.length + 1}`,
+      name: `Huddle ${chats.length + 1}`,
       messages: []
     };
     setChats((prevChats: Chat[]) => [...prevChats, newChat]);
@@ -90,7 +95,7 @@ export default function Home() {
 
     try {
       console.log('Sending message to AI:', userMessage);
-      const response = await streamMessage(JSON.stringify(updatedHistory));
+      const response = await streamMessage(JSON.stringify(updatedHistory), speed);
       console.log('Received response from AI:', response);
 
       if (!response.body) {
@@ -106,6 +111,7 @@ export default function Home() {
         const chunk = new TextDecoder().decode(value);
         console.log('Received chunk:', chunk);
         fullResponse += chunk;
+        await new Promise(resolve => setTimeout(resolve, getDelay(speed)));
         setStreamingMessage((prev: string) => prev + chunk);
       }
 
@@ -133,6 +139,16 @@ export default function Home() {
     } finally {
       setIsStreaming(false);
       setStreamingMessage('');
+    }
+  };
+
+  const getDelay = (speed: string): number => {
+    switch (speed) {
+      case 'Slightly Stoned': return 100;
+      case 'Moderately High': return 500;
+      case 'Pretty Baked': return 1000;
+      case 'Time To Go Lie Down': return 2000;
+      default: return 0;
     }
   };
 
@@ -166,7 +182,7 @@ export default function Home() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="text-white focus:outline-none flex items-center"
           >
-            Latency: {highness} <ChevronDown size={20} className="ml-2" />
+            Latency: {speed} <ChevronDown size={20} className="ml-2" />
           </button>
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#3A3A3A] rounded-md shadow-lg z-10">
@@ -175,7 +191,7 @@ export default function Home() {
                   key={option}
                   className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#4A4A4A]"
                   onClick={() => {
-                    setHighness(option);
+                    setSpeed(option);
                     setDropdownOpen(false);
                   }}
                 >

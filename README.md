@@ -1,6 +1,8 @@
 # Stoned AI Chat
 
-This is a Next.js project that implements an AI chatbot with a "stoned" personality. It uses the OpenAI API to generate responses and features a unique interface designed for casual, laid-back conversations.
+This is a Next.js project that implements an AI chatbot that impersonates a real life personality. It uses the OpenAI API to generate responses and features a unique interface designed for casual, laid-back conversations.
+
+logic is implemented in order to scrape various social media and other websites containing information and key characteristics of this person it is suppose to impoersonate. by scraping these sites and processing the data the chatbot should have more than enough information to learn all it needs to know aboiut the peran it will impersonate.
 
 ## Features
 
