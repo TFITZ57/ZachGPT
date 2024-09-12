@@ -1,4 +1,5 @@
 import { runDataPipeline } from '../app/utils/dataPipeline';
+import { vectorDb } from '../app/utils/vectorDb';
 
 const profiles = {
   facebook: 'https://www.facebook.com/zach.hastings',
@@ -11,3 +12,15 @@ const profiles = {
 runDataPipeline(profiles)
   .then(() => console.log('Pipeline completed successfully'))
   .catch((error) => console.error('Pipeline failed:', error));
+
+async function processData(data: any) {
+  // Process and transform your data as needed
+  const processedData = {
+    name: data.name,
+    quote: data.quote,
+    personality_traits: data.traits,
+    text: `${data.name}: ${data.quote}` // Combine name and quote for text search
+  };
+
+  await vectorDb.upsert('your_platform', processedData);
+}
